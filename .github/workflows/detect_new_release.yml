@@ -117,7 +117,7 @@ jobs:
 
           curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Content-Type: application/json" \
-          -d "$(jq -n \
+          -d "$(jq -n --indent 0 \
                 --arg title "$issue_title" \
                 --arg body "$issue_body" \
                 --argjson labels '["news"]' \
