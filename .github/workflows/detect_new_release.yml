@@ -115,12 +115,11 @@ jobs:
         run: |
           echo "creating new issue ..."
 
+          json_payload="$(jq -n --indent 0 --arg title "$issue_title" --arg body "$issue_body" --argjson labels '["news"]' '{title: $title, body: $body, labels: $labels}')"
+          echo -e "$json_payload"
+
           curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Content-Type: application/json" \
-          -d "$(jq -n --indent 0 \
-                --arg title "$issue_title" \
-                --arg body "$issue_body" \
-                --argjson labels '["news"]' \
-                '{title: $title, body: $body, labels: $labels}')" \
+          -d "$json_payload" \
           "https://api.github.com/repos/${{ github.repository }}/issues"
 
