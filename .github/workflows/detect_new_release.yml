@@ -116,6 +116,11 @@ jobs:
           echo "creating new issue ..."
 
           curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -d '{"title": "$issue_title", "body": "$issue_body", "labels": ["news"]}' \
+          -H "Content-Type: application/json" \
+          -d "$(jq -n \
+                --arg title "$issue_title" \
+                --arg body "$issue_body" \
+                --argjson labels '["news"]' \
+                '{title: $title, body: $body, labels: $labels}')" \
           "https://api.github.com/repos/${{ github.repository }}/issues"
 
