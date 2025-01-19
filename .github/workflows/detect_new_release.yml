@@ -94,32 +94,32 @@ jobs:
           ISSUES=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=open&labels=news" | jq -r '.[].title')
           echo "fetched issues of ${{ github.repository }}"
 
-          issue_title="$ISSUE_TITLE"
-          issue_body="$ISSUE_BODY"
-
           for title in $ISSUES; do
-            if [ "$title" == "$issue_title" ]; then
-              echo "Issue '$issue_title' already exists"
+            if [ "$title" == "$ISSUE_TITLE" ]; then
+              echo "Issue '$ISSUE_TITLE' already exists"
               echo "exists=true" >> $GITHUB_OUTPUT
               exit 0
             fi
           done
-          echo "Issue '$issue_title' does not exist"
+          echo "Issue '$ISSUE_TITLE' does not exist"
           echo "exists=false" >> $GITHUB_OUTPUT
         env:
           ISSUE_TITLE: ${{ steps.issue_contents.outputs.issue_title }}
-          ISSUE_BODY: ${{ steps.issue_contents.outputs.issue_body }}
 
       - name: Create new issue
         if: steps.check_issue.outputs.exists != 'true'
         run: |
           echo "creating new issue ..."
 
-          json_payload="$(jq -n --indent 0 --arg title "$issue_title" --arg body "$issue_body" --argjson labels '["news"]' '{title: $title, body: $body, labels: $labels}')"
+          json_payload="$(jq -n --indent 0 --arg title "$ISSUE_TITLE" --arg body "$ISSUE_BODY" --argjson labels '["news"]' '{title: $title, body: $body, labels: $labels}')"
+          echo -e "JSON payload:\n"
           echo -e "$json_payload"
 
           curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d "$json_payload" \
           "https://api.github.com/repos/${{ github.repository }}/issues"
+        env:
+          ISSUE_TITLE: ${{ steps.issue_contents.outputs.issue_title }}
+          ISSUE_BODY: ${{ steps.issue_contents.outputs.issue_body }}
 
