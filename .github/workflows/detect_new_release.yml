@@ -86,7 +86,7 @@ jobs:
           echo "$issue_body" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
         env:
-          NEW_BODY=${{ needs.compare-release-tags.outputs.desktop_body }}
+          NEW_BODY: ${{ needs.compare-release-tags.outputs.desktop_body }}
 
       - name: Check if issue exists
         id: check_issue
