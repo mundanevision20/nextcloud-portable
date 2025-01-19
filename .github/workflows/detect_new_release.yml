@@ -90,15 +90,14 @@ jobs:
 
       - name: Check if issue exists
         id: check_issue
+        continue-on-error: true
         run: |
           ISSUES=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=open&labels=news" | jq -r '.[].title')
           echo "fetched issues of ${{ github.repository }}"
-          
-          echo -e "\n\n$ISSUES\n\n"
 
-          issue_title=${{ steps.issue_contents.outputs.issue_title }}
-          issue_body=${{ steps.issue_contents.outputs.issue_body }}
-          
+          issue_title="$ISSUE_TITLE"
+          issue_body="$ISSUE_BODY"
+
           for title in $ISSUES; do
             if [ "$title" == "$issue_title" ]; then
               echo "Issue '$issue_title' already exists"
@@ -108,9 +107,12 @@ jobs:
           done
           echo "Issue '$issue_title' does not exist"
           echo "exists=false" >> $GITHUB_OUTPUT
+        env:
+          ISSUE_TITLE: ${{ steps.issue_contents.outputs.issue_title }}
+          ISSUE_BODY: ${{ steps.issue_contents.outputs.issue_body }}
 
       - name: Create new issue
-        if: steps.check_issue.outputs.exists == 'false'
+        if: steps.check_issue.outputs.exists != 'true'
         run: |
           echo "creating new issue ..."
 
