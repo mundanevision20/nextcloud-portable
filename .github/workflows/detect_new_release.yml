@@ -2,8 +2,8 @@ name: Detect new upstream release
 
 on:
   push:
-    branches:
-      - main
+    paths:
+      - .github/workflows/detect_new_release.yml
   schedule:
       # every Monday at 04:05AM (UTC)
       - cron: "5 4 * * 1"
@@ -32,7 +32,9 @@ jobs:
 
           desktop_body=$(echo "$desktop_json" | jq -r '.body')
           echo "Latest release body of nextcloud/desktop: $desktop_body"
-          echo "desktop_body=$desktop_body" >> $GITHUB_OUTPUT
+          echo "desktop_body<<EOF" >> $GITHUB_OUTPUT
+          echo "$desktop_body" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Fetch latest release tag of portapps/nextcloud-portable
         id: fetch_portable_tag
@@ -70,13 +72,15 @@ jobs:
         id: issue_contents
         run: |
           new_version=${{ needs.compare-release-tags.outputs.desktop_tag }}
-          new_body=${{ needs.compare-release-tags.outputs.desktop_tag }}
+          new_body=${{ needs.compare-release-tags.outputs.desktop_body }}
 
           issue_title="New upstream release $new_version available"
           echo "issue_title=$issue_title" >> $GITHUB_OUTPUT
 
           issue_body="**release notes** of version $new_version:\n\n$new_body"
-          echo "issue_body=$issue_body" >> $GITHUB_OUTPUT
+          echo "issue_body<<EOF" >> $GITHUB_OUTPUT
+          echo "$issue_body" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Check if issue exists
         id: check_issue
