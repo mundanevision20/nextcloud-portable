@@ -76,7 +76,7 @@ jobs:
         id: issue_contents
         run: |
           new_version=${{ needs.compare-release-tags.outputs.desktop_tag }}
-          new_body=${{ needs.compare-release-tags.outputs.desktop_body }}
+          new_body="$NEW_BODY"
 
           issue_title="New upstream release $new_version available"
           echo "issue_title=$issue_title" >> $GITHUB_OUTPUT
@@ -85,6 +85,8 @@ jobs:
           echo "issue_body<<EOF" >> $GITHUB_OUTPUT
           echo "$issue_body" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
+        env:
+          NEW_BODY=${{ needs.compare-release-tags.outputs.desktop_body }}
 
       - name: Check if issue exists
         id: check_issue
