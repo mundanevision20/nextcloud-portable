@@ -47,7 +47,7 @@ jobs:
         id: compare_tags
         run: |
           desktop_tag=${{ steps.fetch_desktop_tag.outputs.desktop_tag }}
-          portable_tag=${{ steps.fetch_portable_tag.outputs.portable_body }}
+          portable_tag=${{ steps.fetch_portable_tag.outputs.portable_tag }}
 
           # remove 'v' prefix
           desktop_tag=$(echo "$desktop_tag" | cut -d "v" -f 2)
