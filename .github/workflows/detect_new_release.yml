@@ -81,9 +81,9 @@ jobs:
           issue_title="New upstream release $new_version available"
           echo "issue_title=$issue_title" >> $GITHUB_OUTPUT
 
-          issue_body="**release notes** of version $new_version:\n\n$new_body"
+          issue_body="**release notes** of version **$new_version**:\n\n$new_body\n"
           echo "issue_body<<EOF" >> $GITHUB_OUTPUT
-          echo "$issue_body" >> $GITHUB_OUTPUT
+          printf "$issue_body" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
         env:
           NEW_BODY: ${{ needs.compare-release-tags.outputs.desktop_body }}
@@ -112,8 +112,9 @@ jobs:
           echo "creating new issue ..."
 
           json_payload="$(jq -n --indent 0 --arg title "$ISSUE_TITLE" --arg body "$ISSUE_BODY" --argjson labels '["news"]' '{title: $title, body: $body, labels: $labels}')"
-          echo -e "JSON payload:\n"
+          echo -e "JSON payload:\n\n"
           echo -e "$json_payload"
+          echo -e "\n\n"
 
           curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Content-Type: application/json" \
