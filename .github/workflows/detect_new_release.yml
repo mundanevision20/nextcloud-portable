@@ -62,6 +62,8 @@ jobs:
             echo "The latest release tags are the same: $desktop_tag"
             echo "tags_differ=false" >> $GITHUB_OUTPUT
           fi
+    outputs:
+      tags_differ: ${{ steps.compare_tags.outputs.tags_differ }}
 
   trigger-notification:
     needs: compare-release-tags
